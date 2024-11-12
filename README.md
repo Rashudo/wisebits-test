@@ -65,6 +65,7 @@ create unique index users_name_uindex
 Каждая сущность имеет свою цепочку валидации, которая может быть легко расширена или изменена.
 
 [Пример контейнера User](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User)
+
 [Пример контейнера Validation](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/Validation)
 
 Помимо Containers в проекте реализован общий слой Ship, который содержит базовые классы и интерфейсы для контейнеров, он нужен для абстракции от фреймворка и упрощения тестирования.
