@@ -22,6 +22,19 @@ final readonly class CreateUserDTO extends DTO
     }
 
     /**
+     * @param array $array<string, string|null>
+     * @return self
+     */
+    public static function createFromArray(array $array): self
+    {
+        return new self(
+            name: $array['name'],
+            email: $array['email'],
+            notes: $array['notes'],
+        );
+    }
+
+    /**
      * @return array<string, string>
      */
     #[ArrayShape(['name' => "string", 'email' => "string", 'notes' => "string|null"])]

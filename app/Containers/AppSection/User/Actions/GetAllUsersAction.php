@@ -9,6 +9,9 @@ use Traversable;
 
 final class GetAllUsersAction extends Action
 {
+    /**
+     * @return Traversable
+     */
     public function run(): Traversable
     {
         // Тут можно добавить логику Критериев (Criteria) для фильрации данных
