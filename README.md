@@ -73,30 +73,37 @@ create unique index users_name_uindex
 
 ## Описание контейнера
 **Actions** - Юзкейсы
+[Пример Actions](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Actions)
 
 **Criteria** - Критерии для уточнения и фильтрации запросов. Используются в репозиториях. Шаблон - Критерий
+[Пример Критериев](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Criteria)
 
 **Contracts** - Контракты контейнера
 
 **Data** - DTO, Объекты данных, миграции, фабрики, репозитории
 
 **Events** - События контейнера
+[Пример Событий](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Events)
 
 **Exceptions** - Ошибки контейнера
 
 **Managers** - Фасады контейнера
+[Пример Фасада](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Managers)
 
 **Models** - Модели контейнера. В данном случае, используются Eloquent-модели.
 
 **Providers** - Провайдеры контейнера
 
 **Services** - Сервисы контейнера
+[Пример Сервиса](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/Validation/Services)
 
 **Tasks** - Атомарные команды контейнера
+[Пример Тасков](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Tasks)
 
 **Tests** - Тесты контейнера (Unit, Functional) 
 
-**Validation** - Валидаторы контейнера
+**Validation** - Валидаторы контейнера (Rules, Specifications)
+[Пример Валидации](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User/Validations)
 
 ## Описание деталей реализации
 - Валидация данных происходит в сервисе валидации, который принимает на вход данные и цепочку спецификаций.
