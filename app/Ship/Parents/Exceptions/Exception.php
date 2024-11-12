@@ -2,9 +2,11 @@
 
 namespace App\Ship\Parents\Exceptions;
 
+use Error;
 use Exception as BaseException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use TypeError;
 
 abstract class Exception extends BaseException
 {
@@ -15,9 +17,9 @@ abstract class Exception extends BaseException
     protected array $errors = [];
 
     public function __construct(
-        ?string        $message = null,
-        ?int           $code = null,
-        ?BaseException $previous = null
+        ?string                            $message = null,
+        ?int                               $code = null,
+        BaseException|TypeError|null|Error $previous = null
     )
     {
         // Detect and set the running environment

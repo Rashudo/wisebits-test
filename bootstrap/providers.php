@@ -1,5 +1,5 @@
 <?php
 
 return [
-    \app\Ship\Providers\AppServiceProvider::class,
+    App\Containers\AppSection\Validation\Providers\ValidationServiceProvider::class,
 ];
