@@ -1,66 +1,181 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Описание задания
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Задание по Backend
 
-## About Laravel
+Для хранения учетных записей пользователей, в проекте была создана следующая таблица в БД:
+Users
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```sql
+create table users
+(
+    id int auto_increment,
+    name varchar(64) not null,
+    email varchar(256) not null,
+    created DATETIME not null,
+    deleted DATETIME null,
+    notes TEXT null,
+    constraint users_pk
+        primary key (id)
+);
+ 
+create unique index users_email_uindex
+    on users (email);
+ 
+create unique index users_name_uindex
+    on users (name);
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Необходимо реализовать класс/классы для чтения, создания и изменения записей в таблице users. Необходимо учесть ряд дополнительных бизнес-требований к работе с пользователями:
+•	значение поля 'name' (имя пользователя):
+- может состоять только из символов a-z и 0-9;
+- не может быть короче 8 символов;
+- не должно содержать слов из списка запрещенных слов;
+- должно быть уникальным;
+•	значение поля 'email':
+- должно иметь корректный для e-mail адреса формат;
+- не должно принадлежать домену из списка "ненадежных" доменов;
+- должно быть уникальным;
+•	значение поля 'deleted':
+- отражает факт "удаления" пользователя (т. н. "soft-delete");
+- не может быть меньше значения поля 'created';
+- для неудаленного, активного пользователя равно NULL;
+- каждое изменение существующей учетной записи пользователя должно журналироваться.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Основным критерием оценки будет являться то, насколько код будет production-ready, в том числе будут оцениваться:
+•	архитектура решения и то, насколько она следует принципам SOLID, насколько проста для поддержки и дальнейшего развития;
+•	грамотное использование современных возможностей языка PHP;
+•	наличие и качество автоматических тестов;
+•	стиль кода, использование единого стандарта оформления.
+•	Реализация фактической работы с СУБД, журналирования, списков запрещенных слов и ненадежных доменов может быть опущена.
+•	Использование сторонних библиотек/фреймворков не возбраняется, но и не является дополнительным плюсом к решению.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Описание реализации
+Проект выполнен в стиле расширения принципов DDD. Помимо выделения слоёв, 
+каждая сущность инкапсулирована внутри своей секции, а там внутри **Контейнера**. 
+Каждая секция может содержать несколько контейнеров, которые отвечают за работу с конкретной сущностью.
+Каждый контейнер содержит Модель или Агрегат, а также интерфейсы и реализации для работы с ними.
+Наружу контейнер предоставляет некий интерфейс, для примера сделан фасад UserManager, 
+который содержит методы для работы c логикой контейнера.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Второй контейнер - Validation, содержит сервис для валидации данных, а также исключения, которые могут возникнуть при валидации.
+Валидация сделана по Шаблон проектирования **Спецификация**. 
+Каждая спецификация проверяет одно правило валидации.
+Спецификации объединены в цепочку, которая проверяет все правила валидации.
+Каждая сущность имеет свою цепочку валидации, которая может быть легко расширена или изменена.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+[Пример контейнера User](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/User)
+[Пример контейнера Validation](https://github.com/Rashudo/wisebits-test/tree/master/app/Containers/AppSection/Validation)
 
-## Laravel Sponsors
+Помимо Containers в проекте реализован общий слой Ship, который содержит базовые классы и интерфейсы для контейнеров, он нужен для абстракции от фреймворка и упрощения тестирования.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+## Описание контейнера
+**Actions** - Юзкейсы
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+**Criteria** - Критерии для уточнения и фильтрации запросов. Используются в репозиториях. Шаблон - Критерий
 
-## Contributing
+**Contracts** - Контракты контейнера
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Data** - DTO, Объекты данных, миграции, фабрики, репозитории
 
-## Code of Conduct
+**Events** - События контейнера
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Exceptions** - Ошибки контейнера
 
-## Security Vulnerabilities
+**Managers** - Фасады контейнера
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Models** - Модели контейнера. В данном случае, используются Eloquent-модели.
 
-## License
+**Providers** - Провайдеры контейнера
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Services** - Сервисы контейнера
+
+**Tasks** - Атомарные команды контейнера
+
+**Tests** - Тесты контейнера (Unit, Functional) 
+
+**Validation** - Валидаторы контейнера
+
+## Описание деталей реализации
+- Валидация данных происходит в сервисе валидации, который принимает на вход данные и цепочку спецификаций.
+- Для валидации используется Спецификация, так как проверки в задании самые разнообразные, возможно даже с использованием внешних сервисов.
+- События изменения/удаления/создания реализованы через события Laravel, которые поджигаются в моделях. Но так как система распределена, события можно забрать у Laravel и поджигать их в соответсвующих Actions.
+- SoftDelete реализован через Eloquent, что позволяет легко восстановить удаленные записи.
+- Логирование ошибок реализовано через базовые исключения контейнера и могут быть легко расширены.
+- Тесты покрывают все слои контейнера. Разделены на Unit (тестирование тасков и событий) и Functional (тестирование юзкейсов).
+- Каждый контейнер слабо связан с другими контейнерами, что позволяет легко заменить или расширить функционал.
+- Валидатор внедряется в контейнер через контракт, что позволяет легко заменить валидатор на другой, если потребуется.
+- Репозиторий может быть легко изменен на другой, если потребуется, так как имплементирует контракт RepositoryInterface.  
+
+
+## Tests
+```
+  PASS  App\Containers\AppSection\User\Tests\Unit\CreateUserTaskTest
+  ✓ create user task                                                                                                       0.29s  
+
+   PASS  App\Containers\AppSection\User\Tests\Unit\DeleteUserTaskTest
+  ✓ delete user task                                                                                                       0.02s  
+  ✓ delete user failed task                                                                                                0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Unit\FindUserByIdTaskTest
+  ✓ find user by id task                                                                                                   0.01s  
+  ✓ find user by id with invalid id task                                                                                   0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Unit\GetAllUsersTaskTest
+  ✓ get all users task                                                                                                     0.01s  
+  ✓ get all users with no users task                                                                                       0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Unit\UpdateUserTaskTest
+  ✓ update user task                                                                                                       0.01s  
+  ✓ update user failed task                                                                                                0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Unit\UserEventsTest
+  ✓ created user event                                                                                                     0.01s  
+  ✓ deleted user event                                                                                                     0.01s  
+  ✓ updated user event                                                                                                     0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Functional\CreateUserActionTest
+  ✓ create user action                                                                                                     0.02s  
+  ✓ wrong prohibited email domain                                                                                          0.01s  
+  ✓ email unique                                                                                                           0.01s  
+  ✓ name doesnt contain wrong symbols                                                                                      0.01s  
+  ✓ name is not empty                                                                                                      0.01s  
+  ✓ name is unique                                                                                                         0.01s  
+  ✓ name is not longer than64 symbols                                                                                      0.01s  
+  ✓ email is not longer than256 symbols                                                                                    0.01s  
+  ✓ name contains bad words                                                                                                0.01s  
+  ✓ email is valid                                                                                                         0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Functional\DeleteUserActionTest
+  ✓ delete user                                                                                                            0.01s  
+  ✓ delete non existing user                                                                                               0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Functional\FindUserByIdActionTest
+  ✓ find user by id                                                                                                        0.03s  
+  ✓ find non existing user                                                                                                 0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Functional\GetAllUsersActionTest
+  ✓ get all users                                                                                                          0.01s  
+  ✓ get all users with empty table                                                                                         0.01s  
+
+   PASS  App\Containers\AppSection\User\Tests\Functional\UpdateUserActionTest
+  ✓ update user                                                                                                            0.01s  
+  ✓ update user only name                                                                                                  0.01s  
+  ✓ update user only email                                                                                                 0.01s  
+  ✓ user update only note                                                                                                  0.01s  
+  ✓ update user with empty data                                                                                            0.01s  
+  ✓ update user with invalid email                                                                                         0.01s  
+  ✓ update user with invalid id                                                                                            0.01s  
+  ✓ update user with prohibited email domain                                                                               0.01s  
+  ✓ update user email unique                                                                                               0.01s  
+  ✓ update user name doesnt contain wrong symbols                                                                          0.01s     
+  ✓ name is unique                                                                                                         0.01s     
+  ✓ update user name is not longer than64 symbols                                                                          0.01s     
+  ✓ update user email is not longer than256 symbols                                                                        0.01s     
+  ✓ update user name contains bad words                                                                                    0.01s     
+  ✓ email is valid                                                                                                         0.01s     
+
+  Tests:    43 passed (46 assertions)
+  Duration: 0.77s
+```
