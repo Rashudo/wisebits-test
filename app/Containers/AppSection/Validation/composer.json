@@ -1,0 +1,6 @@
+{
+  "name": "rashdor/validator-service",
+  "description": "Validator service Container",
+  "require": {
+  }
+}
